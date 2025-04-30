@@ -28,22 +28,56 @@ logging.basicConfig(level=logging.INFO,
 # --- Shodan Queries ---
 # Based on report sections 2.1, 2.2, 6.1 and common knowledge
 # Combine manufacturers, ports, titles, generic terms, and known vulns
+# Define two sets of manufacturer queries - one for paid plans and one for free plans
+# Free plan queries avoid using the product: filter which often causes Access Denied errors
 camera_manufacturers = {
-    'Hikvision': 'server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision"',
-    'Dahua': 'http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua"',
-    'Axis': 'html:"AXIS Video Server" OR product:"Axis"',
-    'Foscam': 'title:"IPCamera Login" OR product:"Foscam"',
-    'Vivotek': 'http.component:"Vivotek" OR product:"Vivotek"',
-    'GeoVision': 'server:"GeoHttpServer" OR product:"GeoVision"',
-    'Bosch': 'http.html:"Bosch Security" OR product:"Bosch"',
-    'Hanwha': 'ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet"',
-    'Reolink': 'product:"Reolink"',
-    'Amcrest': 'product:"Amcrest"'
+    'Hikvision': {
+        'paid': 'server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision"',
+        'free': 'server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision"'
+    },
+    'Dahua': {
+        'paid': 'http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua"',
+        'free': 'http.favicon.hash:-1024525048 OR http.html:"Dahua"'
+    },
+    'Axis': {
+        'paid': 'html:"AXIS Video Server" OR product:"Axis"',
+        'free': 'html:"AXIS Video Server"'
+    },
+    'Foscam': {
+        'paid': 'title:"IPCamera Login" OR product:"Foscam"',
+        'free': 'title:"IPCamera Login"'
+    },
+    'Vivotek': {
+        'paid': 'http.component:"Vivotek" OR product:"Vivotek"',
+        'free': 'http.component:"Vivotek"'
+    },
+    'GeoVision': {
+        'paid': 'server:"GeoHttpServer" OR product:"GeoVision"',
+        'free': 'server:"GeoHttpServer"'
+    },
+    'Bosch': {
+        'paid': 'http.html:"Bosch Security" OR product:"Bosch"',
+        'free': 'http.html:"Bosch Security"'
+    },
+    'Hanwha': {
+        'paid': 'ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet"',
+        'free': 'ssl:"Wisenet"'
+    },
+    'Reolink': {
+        'paid': 'product:"Reolink"',
+        'free': 'http.html:"Reolink"'
+    },
+    'Amcrest': {
+        'paid': 'product:"Amcrest"',
+        'free': 'http.html:"Amcrest"'
+    }
 }
 
 common_ports = ['554', '80', '8080', '88', '81', '443', '8443']
 common_titles = ['"IP Camera"', '"Live View"', '"Network Camera"', '"Webcam"', '"ViewerFrame?Mode="']
-generic_terms = ['webcam', 'product:"Network Video Recorder"', 'product:"NVR"', 'product:"DVR"', 'device:"webcam"']
+# Define two sets of generic terms - one for paid plans and one for free plans
+generic_terms_paid = ['webcam', 'product:"Network Video Recorder"', 'product:"NVR"', 'product:"DVR"', 'device:"webcam"']
+generic_terms_free = ['webcam', 'http.title:"Network Video Recorder"', 'http.title:"NVR"', 'http.title:"DVR"', 'device:"webcam"']
 vulnerability_filters = ['vuln:CVE-2021-36260', 'vuln:CVE-2017-7921', 'vuln:CVE-2023-21428'] # Add more relevant CVEs
 
 def generate_queries(free_mode=False):
@@ -53,10 +87,14 @@ def generate_queries(free_mode=False):
     """
     queries = set() # Use a set to avoid duplicate queries
     if free_mode:
-        logging.warning("Running in FREE MODE. Excluding queries with potentially restricted filters (vuln:, tag:, has_screenshot:).")
+        logging.warning("Running in FREE MODE. Excluding queries with potentially restricted filters (product:, vuln:, tag:, has_screenshot:).")
+        logging.warning("Free mode uses alternative queries that avoid the product: filter which often causes Access Denied errors.")
 
     # 1. Manufacturer + Port combinations
-    for manu_name, manu_query in camera_manufacturers.items():
+    for manu_name, manu_options in camera_manufacturers.items():
+        # Select the appropriate query based on mode
+        manu_query = manu_options['free'] if free_mode else manu_options['paid']
+        
         for port in common_ports:
             queries.add(f'{manu_query} port:{port}')
             # Add screenshot filter only if not in free mode
@@ -64,7 +102,9 @@ def generate_queries(free_mode=False):
                 queries.add(f'{manu_query} port:{port} has_screenshot:true')
 
     # 2. Generic Terms + Ports
-    for term in generic_terms:
+    # Use the appropriate set of generic terms based on mode
+    terms = generic_terms_free if free_mode else generic_terms_paid
+    for term in terms:
         for port in common_ports:
             queries.add(f'{term} port:{port}')
             if not free_mode:
@@ -93,8 +133,19 @@ def generate_queries(free_mode=False):
 
     # Add some basic, likely free queries just in case
     queries.add('webcam')
-    queries.add('product:"ip camera"')
+    # Avoid product: filter in free mode
+    if free_mode:
+        queries.add('http.title:"ip camera"')
+    else:
+        queries.add('product:"ip camera"')
     queries.add('port:554') # Basic RTSP check
+    
+    # Add some additional free-friendly queries
+    if free_mode:
+        queries.add('http.title:"camera"')
+        queries.add('http.title:"RTSP"')
+        queries.add('http.title:"surveillance"')
+        queries.add('server:"IP Camera"')
 
     logging.info(f"Generated {len(queries)} unique search queries (Free mode: {free_mode}).")
     return list(queries)
@@ -184,6 +235,9 @@ def camera_discovery(api, queries, max_per_query, total_max):
             logging.error(f"API Error for query '{query}': {error_message}")
             if "access denied" in error_message.lower() or "403 forbidden" in error_message.lower():
                 logging.warning(f" -> This 'Access Denied' error often indicates an issue with the API key (invalid?) or insufficient plan permissions for the filter used in the query: '{query}'. Check your Shodan account/plan.")
+                # Check if the query contains product: filter which often causes issues with free API
+                if 'product:' in query.lower():
+                    logging.warning(f" -> The 'product:' filter in this query may be causing the Access Denied error with a free API key.")
             # Consider adding more robust error handling, e.g., backoff delay based on error type
             time.sleep(QUERY_DELAY * 5) # Longer delay after error
         except Exception as e:
@@ -224,6 +278,8 @@ if __name__ == "__main__":
              logging.warning("Running in --free mode, but API key seems to belong to a paid plan. You might get fewer results than expected.")
         elif not args.free and api_info.get('plan', 'N/A').lower() == 'oss':
              logging.warning("Running in standard mode with a free API key. Many queries may fail due to filter restrictions. Consider using the --free flag.")
+             logging.warning("Automatically switching to --free mode to avoid Access Denied errors.")
+             args.free = True
 
     except shodan.APIError as e:
         logging.error(f"Failed to connect to Shodan API: {e}")

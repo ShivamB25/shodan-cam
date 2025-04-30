@@ -85,11 +85,19 @@ python main.py
 
 **Free API Key Mode:**
 
-If you are using a free Shodan API key, many advanced filters (`vuln:`, `tag:`, `has_screenshot:`) might be restricted, causing errors. Use the `--free` flag to run the script with a limited set of queries that are more likely to work on a free plan:
+If you are using a free Shodan API key, many advanced filters (`product:`, `vuln:`, `tag:`, `has_screenshot:`) might be restricted, causing "Access denied (403 Forbidden)" errors. Use the `--free` flag to run the script with a limited set of queries that are more likely to work on a free plan:
 
 ```bash
 python main.py --free
 ```
+
+The script will automatically switch to free mode if it detects you're using a free API key (oss plan) without the `--free` flag.
+
+**What's different in free mode?**
+- Avoids using the `product:` filter which often causes Access Denied errors with free API keys
+- Uses alternative search terms based on `http.title`, `http.html`, and other free-friendly filters
+- Adds more basic queries that work well with the free tier
+- Provides better error messages when Access Denied errors occur
 
 The script will:
 1.  Connect to the Shodan API using your key.
@@ -104,11 +112,21 @@ The CSV file includes columns like `ip`, `port`, `org`, `isp`, `hostnames`, `cou
 ## Example Queries (Internal)
 
 The script automatically generates queries based on combinations like:
-*   `server:"Hikvision-Webs" port:554`
+
+**In standard mode (paid API):**
+*   `server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:554`
 *   `http.title:"IP Camera" port:80 has_screenshot:true`
 *   `product:"Axis" port:8080`
 *   `vuln:CVE-2021-36260`
 *   `has_screenshot:true tag:"webcam"`
+
+**In free mode:**
+*   `server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" port:554`
+*   `http.title:"IP Camera" port:80`
+*   `html:"AXIS Video Server" port:8080`
+*   `http.title:"camera"`
+*   `server:"IP Camera"`
+
 *(See the `generate_queries` function in `main.py` for the full logic)*
 
 ## Code Overview
