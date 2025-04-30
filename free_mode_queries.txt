@@ -1,0 +1,24 @@
+# Free Mode Queries (21 total)
+# These queries are designed to work with the free Shodan API tier
+
+1. nvr
+2. dvr port:8080
+3. foscam
+4. port:8443
+5. ipcam
+6. cctv
+7. hikvision
+8. port:8080
+9. dvr
+10. axis
+11. webcam
+12. camera
+13. webcam port:80
+14. port:554
+15. camera port:554
+16. port:81
+17. dahua
+18. port:88
+19. port:80
+20. port:443
+21. netcam

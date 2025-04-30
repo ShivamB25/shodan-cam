@@ -1,0 +1,312 @@
+# Paid Mode Queries (309 total)
+# These queries require a paid Shodan API plan to work properly
+
+1. http.title:"ViewerFrame?Mode=" port:8443 has_screenshot:true
+2. http.title:"IP Camera" port:8443
+3. http.html:"Bosch Security" OR product:"Bosch" port:443 has_screenshot:true
+4. product:"NVR" port:81 has_screenshot:true
+5. http.component:"Vivotek" OR product:"Vivotek" port:8080 has_screenshot:true
+6. product:"Network Video Recorder" port:88
+7. product:"Network Video Recorder" port:554
+8. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:554
+9. http.html:"Bosch Security" OR product:"Bosch" port:8443 has_screenshot:true
+10. product:"DVR" port:81
+11. product:"Reolink" port:80 has_screenshot:true
+12. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:443
+13. http.title:"Live View" port:80 has_screenshot:true
+14. webcam port:88
+15. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:8080
+16. product:"DVR" port:8443
+17. vuln:CVE-2021-36260 port:443
+18. product:"Network Video Recorder" port:80
+19. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:8080
+20. webcam port:81
+21. product:"Amcrest" port:8080 has_screenshot:true
+22. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:81
+23. server:"GeoHttpServer" OR product:"GeoVision" port:554
+24. title:"IPCamera Login" OR product:"Foscam" port:8080
+25. http.title:"Network Camera" port:88
+26. http.title:"IP Camera" port:8080
+27. has_screenshot:true product:"webcam"
+28. http.title:"Webcam" port:80 has_screenshot:true
+29. http.title:"ViewerFrame?Mode=" port:88 has_screenshot:true
+30. product:"Reolink" port:80
+31. http.title:"Network Camera" port:554
+32. title:"IPCamera Login" OR product:"Foscam" port:80
+33. product:"Amcrest" port:81
+34. product:"Amcrest" port:8443
+35. http.title:"Live View" port:80
+36. product:"NVR" port:443 has_screenshot:true
+37. server:"GeoHttpServer" OR product:"GeoVision" port:8443 has_screenshot:true
+38. http.title:"Webcam" port:8443 has_screenshot:true
+39. http.title:"Network Camera" port:8080 has_screenshot:true
+40. server:"GeoHttpServer" OR product:"GeoVision" port:8080
+41. webcam port:443
+42. device:"webcam" port:80 has_screenshot:true
+43. product:"NVR" port:80
+44. http.title:"Live View" port:8443 has_screenshot:true
+45. http.title:"Network Camera" port:81 has_screenshot:true
+46. http.component:"Vivotek" OR product:"Vivotek" port:81
+47. product:"DVR" port:554 has_screenshot:true
+48. vuln:CVE-2023-21428 port:443
+49. vuln:CVE-2023-21428 port:8443
+50. http.component:"Vivotek" OR product:"Vivotek" port:8443
+51. http.title:"Webcam" port:80
+52. http.component:"Vivotek" OR product:"Vivotek" port:554
+53. product:"NVR" port:8080 has_screenshot:true
+54. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:8443
+55. server:"GeoHttpServer" OR product:"GeoVision" port:554 has_screenshot:true
+56. vuln:CVE-2017-7921
+57. product:"Amcrest" port:554
+58. http.component:"Vivotek" OR product:"Vivotek" port:8080
+59. product:"DVR" port:80 has_screenshot:true
+60. http.title:"ViewerFrame?Mode=" port:81
+61. http.title:"Live View" port:554
+62. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:8080 has_screenshot:true
+63. webcam port:88 has_screenshot:true
+64. html:"AXIS Video Server" OR product:"Axis" port:80 has_screenshot:true
+65. http.component:"Vivotek" OR product:"Vivotek" port:81 has_screenshot:true
+66. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:88
+67. product:"NVR" port:8080
+68. http.title:"Webcam" port:554 has_screenshot:true
+69. http.title:"Live View" port:8080 has_screenshot:true
+70. http.title:"IP Camera" port:443
+71. vuln:CVE-2021-36260 port:554
+72. html:"AXIS Video Server" OR product:"Axis" port:80
+73. server:"GeoHttpServer" OR product:"GeoVision" port:8443
+74. webcam port:554 has_screenshot:true
+75. http.title:"Network Camera" port:8080
+76. http.title:"ViewerFrame?Mode=" port:80
+77. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:554
+78. product:"DVR" port:554
+79. vuln:CVE-2023-21428 port:80
+80. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:80 has_screenshot:true
+81. webcam port:554
+82. product:"Amcrest" port:443 has_screenshot:true
+83. product:"DVR" port:81 has_screenshot:true
+84. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:8080 has_screenshot:true
+85. http.title:"Network Camera" port:80 has_screenshot:true
+86. http.title:"IP Camera" port:81 has_screenshot:true
+87. vuln:CVE-2021-36260 port:81
+88. webcam port:443 has_screenshot:true
+89. device:"webcam" port:554
+90. http.title:"Network Camera" port:80
+91. product:"Amcrest" port:554 has_screenshot:true
+92. http.component:"Vivotek" OR product:"Vivotek" port:8443 has_screenshot:true
+93. device:"webcam" port:443
+94. vuln:CVE-2023-21428 port:8080
+95. html:"AXIS Video Server" OR product:"Axis" port:88 has_screenshot:true
+96. product:"Reolink" port:554
+97. vuln:CVE-2021-36260 port:88
+98. server:"GeoHttpServer" OR product:"GeoVision" port:443 has_screenshot:true
+99. http.title:"ViewerFrame?Mode=" port:81 has_screenshot:true
+100. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:8443
+101. device:"webcam" port:8080 has_screenshot:true
+102. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:554 has_screenshot:true
+103. webcam port:81 has_screenshot:true
+104. server:"GeoHttpServer" OR product:"GeoVision" port:88 has_screenshot:true
+105. http.html:"Bosch Security" OR product:"Bosch" port:8080
+106. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:8443 has_screenshot:true
+107. http.title:"Live View" port:8443
+108. html:"AXIS Video Server" OR product:"Axis" port:443 has_screenshot:true
+109. device:"webcam" port:8443 has_screenshot:true
+110. vuln:CVE-2023-21428
+111. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:80
+112. product:"DVR" port:88
+113. http.title:"IP Camera" port:80 has_screenshot:true
+114. http.html:"Bosch Security" OR product:"Bosch" port:8443
+115. http.title:"IP Camera" port:554
+116. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:81 has_screenshot:true
+117. http.title:"Live View" port:443 has_screenshot:true
+118. has_screenshot:true port:554
+119. device:"webcam" port:80
+120. product:"DVR" port:88 has_screenshot:true
+121. server:"GeoHttpServer" OR product:"GeoVision" port:81
+122. title:"IPCamera Login" OR product:"Foscam" port:443 has_screenshot:true
+123. http.title:"Live View" port:443
+124. port:554
+125. html:"AXIS Video Server" OR product:"Axis" port:8443 has_screenshot:true
+126. title:"IPCamera Login" OR product:"Foscam" port:8443
+127. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:8443
+128. product:"DVR" port:8080
+129. vuln:CVE-2021-36260 port:8443
+130. http.title:"Webcam" port:88
+131. http.title:"Live View" port:81 has_screenshot:true
+132. product:"Reolink" port:81
+133. http.title:"IP Camera" port:88 has_screenshot:true
+134. http.title:"Webcam" port:8080 has_screenshot:true
+135. webcam port:8080
+136. http.title:"Live View" port:8080
+137. http.html:"Bosch Security" OR product:"Bosch" port:443
+138. vuln:CVE-2021-36260
+139. http.component:"Vivotek" OR product:"Vivotek" port:88
+140. server:"GeoHttpServer" OR product:"GeoVision" port:80 has_screenshot:true
+141. http.title:"Webcam" port:81 has_screenshot:true
+142. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:8080
+143. product:"DVR" port:80
+144. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:88
+145. html:"AXIS Video Server" OR product:"Axis" port:554 has_screenshot:true
+146. server:"GeoHttpServer" OR product:"GeoVision" port:80
+147. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:443
+148. title:"IPCamera Login" OR product:"Foscam" port:443
+149. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:81 has_screenshot:true
+150. html:"AXIS Video Server" OR product:"Axis" port:443
+151. http.title:"ViewerFrame?Mode=" port:443
+152. http.title:"ViewerFrame?Mode=" port:8080
+153. http.title:"Network Camera" port:8443
+154. has_screenshot:true tag:"webcam"
+155. http.title:"ViewerFrame?Mode=" port:443 has_screenshot:true
+156. product:"NVR" port:554 has_screenshot:true
+157. server:"GeoHttpServer" OR product:"GeoVision" port:88
+158. http.title:"Webcam" port:8080
+159. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:8080 has_screenshot:true
+160. http.title:"Live View" port:81
+161. vuln:CVE-2017-7921 port:80
+162. http.html:"Bosch Security" OR product:"Bosch" port:8080 has_screenshot:true
+163. vuln:CVE-2017-7921 port:8443
+164. title:"IPCamera Login" OR product:"Foscam" port:554
+165. http.title:"IP Camera" port:8443 has_screenshot:true
+166. title:"IPCamera Login" OR product:"Foscam" port:88 has_screenshot:true
+167. html:"AXIS Video Server" OR product:"Axis" port:554
+168. html:"AXIS Video Server" OR product:"Axis" port:81 has_screenshot:true
+169. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:554 has_screenshot:true
+170. http.title:"IP Camera" port:80
+171. http.title:"Network Camera" port:81
+172. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:81
+173. http.title:"ViewerFrame?Mode=" port:8080 has_screenshot:true
+174. product:"NVR" port:81
+175. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:80
+176. product:"Network Video Recorder" port:443
+177. webcam port:8080 has_screenshot:true
+178. product:"Network Video Recorder" port:8443
+179. http.title:"Webcam" port:88 has_screenshot:true
+180. title:"IPCamera Login" OR product:"Foscam" port:8080 has_screenshot:true
+181. http.title:"ViewerFrame?Mode=" port:8443
+182. http.component:"Vivotek" OR product:"Vivotek" port:443 has_screenshot:true
+183. device:"webcam" port:88
+184. http.component:"Vivotek" OR product:"Vivotek" port:554 has_screenshot:true
+185. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:88 has_screenshot:true
+186. http.html:"Bosch Security" OR product:"Bosch" port:88
+187. vuln:CVE-2017-7921 port:88
+188. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:8443 has_screenshot:true
+189. http.html:"Bosch Security" OR product:"Bosch" port:81 has_screenshot:true
+190. product:"Network Video Recorder" port:554 has_screenshot:true
+191. http.component:"Vivotek" OR product:"Vivotek" port:443
+192. product:"Amcrest" port:88
+193. device:"webcam" port:443 has_screenshot:true
+194. http.html:"Bosch Security" OR product:"Bosch" port:81
+195. product:"NVR" port:80 has_screenshot:true
+196. title:"IPCamera Login" OR product:"Foscam" port:554 has_screenshot:true
+197. product:"Network Video Recorder" port:8080 has_screenshot:true
+198. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:81 has_screenshot:true
+199. device:"webcam" port:8443
+200. server:"GeoHttpServer" OR product:"GeoVision" port:81 has_screenshot:true
+201. http.component:"Vivotek" OR product:"Vivotek" port:88 has_screenshot:true
+202. http.title:"ViewerFrame?Mode=" port:80 has_screenshot:true
+203. title:"IPCamera Login" OR product:"Foscam" port:80 has_screenshot:true
+204. product:"Amcrest" port:80
+205. http.title:"ViewerFrame?Mode=" port:88
+206. http.title:"Webcam" port:554
+207. product:"Reolink" port:443 has_screenshot:true
+208. http.title:"ViewerFrame?Mode=" port:554 has_screenshot:true
+209. product:"Reolink" port:554 has_screenshot:true
+210. server:"GeoHttpServer" OR product:"GeoVision" port:443
+211. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:443 has_screenshot:true
+212. product:"Amcrest" port:443
+213. server:"GeoHttpServer" OR product:"GeoVision" port:8080 has_screenshot:true
+214. product:"DVR" port:443 has_screenshot:true
+215. product:"Amcrest" port:81 has_screenshot:true
+216. http.html:"Bosch Security" OR product:"Bosch" port:80 has_screenshot:true
+217. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:443 has_screenshot:true
+218. http.title:"Webcam" port:8443
+219. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:80 has_screenshot:true
+220. product:"Reolink" port:8080 has_screenshot:true
+221. product:"NVR" port:88
+222. product:"Reolink" port:81 has_screenshot:true
+223. http.title:"Live View" port:88 has_screenshot:true
+224. http.title:"IP Camera" port:88
+225. webcam
+226. product:"Amcrest" port:8443 has_screenshot:true
+227. http.html:"Bosch Security" OR product:"Bosch" port:80
+228. html:"AXIS Video Server" OR product:"Axis" port:8080
+229. http.title:"Network Camera" port:88 has_screenshot:true
+230. vuln:CVE-2017-7921 port:443
+231. html:"AXIS Video Server" OR product:"Axis" port:8080 has_screenshot:true
+232. http.title:"Network Camera" port:8443 has_screenshot:true
+233. product:"Reolink" port:8443 has_screenshot:true
+234. http.component:"Vivotek" OR product:"Vivotek" port:80 has_screenshot:true
+235. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:88
+236. device:"webcam" port:81 has_screenshot:true
+237. product:"Amcrest" port:88 has_screenshot:true
+238. product:"Network Video Recorder" port:80 has_screenshot:true
+239. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:80
+240. product:"Reolink" port:88
+241. vuln:CVE-2023-21428 port:88
+242. http.title:"ViewerFrame?Mode=" port:554
+243. http.title:"Webcam" port:443 has_screenshot:true
+244. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:554
+245. product:"Network Video Recorder" port:88 has_screenshot:true
+246. html:"AXIS Video Server" OR product:"Axis" port:88
+247. webcam port:8443
+248. device:"webcam" port:8080
+249. product:"NVR" port:554
+250. product:"NVR" port:8443
+251. product:"DVR" port:443
+252. webcam port:80 has_screenshot:true
+253. webcam port:8443 has_screenshot:true
+254. product:"Reolink" port:8443
+255. http.title:"Network Camera" port:443 has_screenshot:true
+256. ssl:"Wisenet" OR product:"Hanwha" OR product:"Wisenet" port:88 has_screenshot:true
+257. product:"Reolink" port:88 has_screenshot:true
+258. http.title:"Webcam" port:81
+259. vuln:CVE-2017-7921 port:81
+260. http.title:"Live View" port:554 has_screenshot:true
+261. vuln:CVE-2017-7921 port:554
+262. title:"IPCamera Login" OR product:"Foscam" port:81
+263. product:"DVR" port:8080 has_screenshot:true
+264. vuln:CVE-2023-21428 port:81
+265. product:"Amcrest" port:8080
+266. title:"IPCamera Login" OR product:"Foscam" port:8443 has_screenshot:true
+267. device:"webcam" port:88 has_screenshot:true
+268. product:"Network Video Recorder" port:8443 has_screenshot:true
+269. http.title:"IP Camera" port:443 has_screenshot:true
+270. html:"AXIS Video Server" OR product:"Axis" port:81
+271. title:"IPCamera Login" OR product:"Foscam" port:81 has_screenshot:true
+272. product:"Network Video Recorder" port:81
+273. device:"webcam" port:81
+274. http.html:"Bosch Security" OR product:"Bosch" port:554
+275. http.title:"Network Camera" port:443
+276. http.title:"IP Camera" port:81
+277. product:"Network Video Recorder" port:8080
+278. product:"NVR" port:88 has_screenshot:true
+279. title:"IPCamera Login" OR product:"Foscam" port:88
+280. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:80 has_screenshot:true
+281. device:"webcam" port:554 has_screenshot:true
+282. http.title:"IP Camera" port:8080 has_screenshot:true
+283. vuln:CVE-2017-7921 port:8080
+284. product:"NVR" port:443
+285. vuln:CVE-2021-36260 port:80
+286. html:"AXIS Video Server" OR product:"Axis" port:8443
+287. http.title:"Webcam" port:443
+288. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:81
+289. product:"DVR" port:8443 has_screenshot:true
+290. http.title:"IP Camera" port:554 has_screenshot:true
+291. vuln:CVE-2021-36260 port:8080
+292. product:"NVR" port:8443 has_screenshot:true
+293. product:"Amcrest" port:80 has_screenshot:true
+294. product:"Network Video Recorder" port:443 has_screenshot:true
+295. product:"Network Video Recorder" port:81 has_screenshot:true
+296. product:"Reolink" port:443
+297. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:443
+298. vuln:CVE-2023-21428 port:554
+299. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:8443 has_screenshot:true
+300. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:88 has_screenshot:true
+301. http.html:"Bosch Security" OR product:"Bosch" port:554 has_screenshot:true
+302. product:"Reolink" port:8080
+303. server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" OR product:"Hikvision" port:443 has_screenshot:true
+304. http.component:"Vivotek" OR product:"Vivotek" port:80
+305. http.title:"Live View" port:88
+306. webcam port:80
+307. http.html:"Bosch Security" OR product:"Bosch" port:88 has_screenshot:true
+308. http.title:"Network Camera" port:554 has_screenshot:true
+309. http.favicon.hash:-1024525048 OR http.html:"Dahua" OR product:"Dahua" port:554 has_screenshot:true
