@@ -91,13 +91,16 @@ If you are using a free Shodan API key, many advanced filters (`product:`, `vuln
 python main.py --free
 ```
 
-The script will automatically switch to free mode if it detects you're using a free API key (oss plan) without the `--free` flag.
+The script will automatically switch to free mode if it detects you're using a free API key (oss plan) or if you have 0 query credits.
 
 **What's different in free mode?**
-- Avoids using the `product:` filter which often causes Access Denied errors with free API keys
-- Uses alternative search terms based on `http.title`, `http.html`, and other free-friendly filters
-- Adds more basic queries that work well with the free tier
-- Provides better error messages when Access Denied errors occur
+- Uses extremely simple queries without complex filters to avoid Access Denied errors
+- Completely avoids using the `product:` filter which often causes Access Denied errors
+- Uses single-term searches like 'webcam', 'camera', 'nvr', 'dvr', 'cctv' instead of complex filters
+- Uses basic port searches without additional filters
+- Provides detailed error messages when Access Denied errors occur
+- Automatically tries simplified versions of failed queries
+- Adds longer delays between queries to respect rate limits
 
 The script will:
 1.  Connect to the Shodan API using your key.
@@ -120,12 +123,14 @@ The script automatically generates queries based on combinations like:
 *   `vuln:CVE-2021-36260`
 *   `has_screenshot:true tag:"webcam"`
 
-**In free mode:**
-*   `server:"Hikvision-Webs" OR http.favicon.hash:-1670171499 OR http.html:"Hikvision" port:554`
-*   `http.title:"IP Camera" port:80`
-*   `html:"AXIS Video Server" port:8080`
-*   `http.title:"camera"`
-*   `server:"IP Camera"`
+**In free mode (extremely simple queries):**
+*   `webcam`
+*   `camera`
+*   `port:554`
+*   `webcam port:80`
+*   `hikvision`
+*   `ipcam`
+*   `dvr`
 
 *(See the `generate_queries` function in `main.py` for the full logic)*
 
@@ -143,3 +148,20 @@ Interested in improving the script? Please see the [CONTRIBUTING.md](CONTRIBUTIN
 ## License
 
 (Optional: Add license information here, e.g., MIT License)
+
+## Troubleshooting
+
+### Access Denied (403 Forbidden) Errors
+
+If you encounter "Access denied (403 Forbidden)" errors even when using the `--free` flag:
+
+1. **Check your API key**: Make sure your Shodan API key is valid and correctly set in the `.env` file.
+
+2. **Query credits**: Free Shodan accounts have limited query credits that reset monthly. Check your available credits with:
+   ```bash
+   shodan info
+   ```
+
+3. **Try even simpler queries**: The script now uses extremely simple queries in free mode, but you can modify the `generate_queries` function to use even simpler queries if needed.
+
+4. **Consider a paid plan**: For extensive camera discovery, a paid Shodan plan is recommended as it provides more query credits and access to advanced filters.

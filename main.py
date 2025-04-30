@@ -77,7 +77,8 @@ common_ports = ['554', '80', '8080', '88', '81', '443', '8443']
 common_titles = ['"IP Camera"', '"Live View"', '"Network Camera"', '"Webcam"', '"ViewerFrame?Mode="']
 # Define two sets of generic terms - one for paid plans and one for free plans
 generic_terms_paid = ['webcam', 'product:"Network Video Recorder"', 'product:"NVR"', 'product:"DVR"', 'device:"webcam"']
-generic_terms_free = ['webcam', 'http.title:"Network Video Recorder"', 'http.title:"NVR"', 'http.title:"DVR"', 'device:"webcam"']
+# For free mode, use extremely simple terms without complex filters
+generic_terms_free = ['webcam', 'camera', 'nvr', 'dvr', 'cctv']
 vulnerability_filters = ['vuln:CVE-2021-36260', 'vuln:CVE-2017-7921', 'vuln:CVE-2023-21428'] # Add more relevant CVEs
 
 def generate_queries(free_mode=False):
@@ -88,64 +89,67 @@ def generate_queries(free_mode=False):
     queries = set() # Use a set to avoid duplicate queries
     if free_mode:
         logging.warning("Running in FREE MODE. Excluding queries with potentially restricted filters (product:, vuln:, tag:, has_screenshot:).")
-        logging.warning("Free mode uses alternative queries that avoid the product: filter which often causes Access Denied errors.")
-
-    # 1. Manufacturer + Port combinations
-    for manu_name, manu_options in camera_manufacturers.items():
-        # Select the appropriate query based on mode
-        manu_query = manu_options['free'] if free_mode else manu_options['paid']
+        logging.warning("Free mode uses extremely simple queries to avoid Access Denied errors with the free API.")
         
+        # For free mode, use extremely simple queries
+        # 1. Basic terms without complex filters
+        for term in generic_terms_free:
+            queries.add(term)
+            
+        # 2. Basic port queries
         for port in common_ports:
-            queries.add(f'{manu_query} port:{port}')
-            # Add screenshot filter only if not in free mode
-            if not free_mode:
+            queries.add(f'port:{port}')
+            
+        # 3. Some very basic combinations that might work
+        queries.add('webcam port:80')
+        queries.add('camera port:554')
+        queries.add('dvr port:8080')
+        
+        # 4. Add some specific camera-related terms
+        queries.add('netcam')
+        queries.add('ipcam')
+        queries.add('axis')
+        queries.add('hikvision')
+        queries.add('dahua')
+        queries.add('foscam')
+        
+    else:
+        # Standard mode for paid API keys
+        # 1. Manufacturer + Port combinations
+        for manu_name, manu_options in camera_manufacturers.items():
+            manu_query = manu_options['paid']
+            
+            for port in common_ports:
+                queries.add(f'{manu_query} port:{port}')
                 queries.add(f'{manu_query} port:{port} has_screenshot:true')
 
-    # 2. Generic Terms + Ports
-    # Use the appropriate set of generic terms based on mode
-    terms = generic_terms_free if free_mode else generic_terms_paid
-    for term in terms:
-        for port in common_ports:
-            queries.add(f'{term} port:{port}')
-            if not free_mode:
+        # 2. Generic Terms + Ports
+        for term in generic_terms_paid:
+            for port in common_ports:
+                queries.add(f'{term} port:{port}')
                 queries.add(f'{term} port:{port} has_screenshot:true')
 
-    # 3. Common Titles + Ports
-    for title in common_titles:
-        for port in common_ports:
-            queries.add(f'http.title:{title} port:{port}')
-            if not free_mode:
+        # 3. Common Titles + Ports
+        for title in common_titles:
+            for port in common_ports:
+                queries.add(f'http.title:{title} port:{port}')
                 queries.add(f'http.title:{title} port:{port} has_screenshot:true')
-
-    # 4. Specific Vulnerabilities (Exclude in free mode)
-    if not free_mode:
+                
+        # 4. Specific Vulnerabilities
         for vuln in vulnerability_filters:
-             queries.add(f'{vuln}')
-             # Combine vuln with common camera ports
-             for port in common_ports:
-                 queries.add(f'{vuln} port:{port}')
-
-    # 5. General Screenshot query (Exclude in free mode)
-    if not free_mode:
+            queries.add(f'{vuln}')
+            # Combine vuln with common camera ports
+            for port in common_ports:
+                queries.add(f'{vuln} port:{port}')
+                
+        # 5. General Screenshot queries
         queries.add('has_screenshot:true product:"webcam"')
-        queries.add('has_screenshot:true tag:"webcam"') # tag: filter might also be restricted
-        queries.add('has_screenshot:true port:554') # RTSP often has screenshots
+        queries.add('has_screenshot:true tag:"webcam"')
+        queries.add('has_screenshot:true port:554')
 
-    # Add some basic, likely free queries just in case
+    # Add some basic queries for both modes
     queries.add('webcam')
-    # Avoid product: filter in free mode
-    if free_mode:
-        queries.add('http.title:"ip camera"')
-    else:
-        queries.add('product:"ip camera"')
     queries.add('port:554') # Basic RTSP check
-    
-    # Add some additional free-friendly queries
-    if free_mode:
-        queries.add('http.title:"camera"')
-        queries.add('http.title:"RTSP"')
-        queries.add('http.title:"surveillance"')
-        queries.add('server:"IP Camera"')
 
     logging.info(f"Generated {len(queries)} unique search queries (Free mode: {free_mode}).")
     return list(queries)
@@ -233,13 +237,33 @@ def camera_discovery(api, queries, max_per_query, total_max):
         except shodan.APIError as e:
             error_message = str(e)
             logging.error(f"API Error for query '{query}': {error_message}")
+            
+            # Handle Access Denied errors
             if "access denied" in error_message.lower() or "403 forbidden" in error_message.lower():
                 logging.warning(f" -> This 'Access Denied' error often indicates an issue with the API key (invalid?) or insufficient plan permissions for the filter used in the query: '{query}'. Check your Shodan account/plan.")
-                # Check if the query contains product: filter which often causes issues with free API
+                
+                # Try to identify which part of the query might be causing the issue
                 if 'product:' in query.lower():
                     logging.warning(f" -> The 'product:' filter in this query may be causing the Access Denied error with a free API key.")
-            # Consider adding more robust error handling, e.g., backoff delay based on error type
-            time.sleep(QUERY_DELAY * 5) # Longer delay after error
+                elif 'http.' in query.lower():
+                    logging.warning(f" -> The 'http.' filter in this query may be causing the Access Denied error with a free API key.")
+                elif ' AND ' in query or ' OR ' in query:
+                    logging.warning(f" -> Complex queries with AND/OR operators may be restricted in the free API tier.")
+                elif query.count(':') > 1:
+                    logging.warning(f" -> Queries with multiple filters may be restricted in the free API tier.")
+                
+                # For free API keys, try a simplified version of the query if possible
+                if args.free and ':' in query:
+                    # Extract the main term without filters
+                    simplified_query = query.split(' ')[0].replace('http.title:', '').replace('product:', '').replace('"', '')
+                    if simplified_query and len(simplified_query) > 3:  # Only if we have a meaningful term
+                        logging.info(f" -> Will try a simplified version of this query later: '{simplified_query}'")
+                        # Add to the end of the queries list if not already there
+                        if simplified_query not in [q.lower() for q in queries]:
+                            queries.append(simplified_query)
+            
+            # Longer delay after error
+            time.sleep(QUERY_DELAY * 5)
         except Exception as e:
             logging.error(f"Unexpected error for query '{query}': {e}")
             time.sleep(QUERY_DELAY * 2)
@@ -274,12 +298,24 @@ if __name__ == "__main__":
         api_info = api.info()
         logging.info(f"Shodan API connection successful. Plan: {api_info.get('plan', 'N/A')}, Credits: {api_info.get('query_credits', 'N/A')}")
         # Add a check relevant to free mode
-        if args.free and api_info.get('plan', 'N/A').lower() != 'oss' and api_info.get('query_credits', 0) > 0:
+        # Check API plan and credits
+        plan = api_info.get('plan', 'N/A').lower()
+        credits = api_info.get('query_credits', 0)
+        
+        if args.free and plan != 'oss' and credits > 0:
              logging.warning("Running in --free mode, but API key seems to belong to a paid plan. You might get fewer results than expected.")
-        elif not args.free and api_info.get('plan', 'N/A').lower() == 'oss':
-             logging.warning("Running in standard mode with a free API key. Many queries may fail due to filter restrictions. Consider using the --free flag.")
+        elif not args.free and plan == 'oss':
+             logging.warning("Running in standard mode with a free API key. Many queries may fail due to filter restrictions.")
              logging.warning("Automatically switching to --free mode to avoid Access Denied errors.")
              args.free = True
+        
+        # Display information about query credits
+        if credits == 0:
+            logging.warning("Your account has 0 query credits. This may limit the searches you can perform.")
+            logging.warning("Free accounts get a limited number of query credits that reset monthly.")
+            if not args.free:
+                logging.warning("Automatically switching to --free mode due to 0 query credits.")
+                args.free = True
 
     except shodan.APIError as e:
         logging.error(f"Failed to connect to Shodan API: {e}")
