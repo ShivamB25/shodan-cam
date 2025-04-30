@@ -164,8 +164,11 @@ def camera_discovery(api, queries, max_per_query, total_max):
             time.sleep(QUERY_DELAY)
 
         except shodan.APIError as e:
-            logging.error(f"API Error for query '{query}': {e}")
-            # Consider adding more robust error handling, e.g., backoff delay
+            error_message = str(e)
+            logging.error(f"API Error for query '{query}': {error_message}")
+            if "access denied" in error_message.lower() or "403 forbidden" in error_message.lower():
+                logging.warning(f" -> This 'Access Denied' error often indicates an issue with the API key (invalid?) or insufficient plan permissions for the filter used in the query: '{query}'. Check your Shodan account/plan.")
+            # Consider adding more robust error handling, e.g., backoff delay based on error type
             time.sleep(QUERY_DELAY * 5) # Longer delay after error
         except Exception as e:
             logging.error(f"Unexpected error for query '{query}': {e}")
