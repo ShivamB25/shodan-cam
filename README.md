@@ -83,6 +83,14 @@ Run the script from the command line:
 python main.py
 ```
 
+**Free API Key Mode:**
+
+If you are using a free Shodan API key, many advanced filters (`vuln:`, `tag:`, `has_screenshot:`) might be restricted, causing errors. Use the `--free` flag to run the script with a limited set of queries that are more likely to work on a free plan:
+
+```bash
+python main.py --free
+```
+
 The script will:
 1.  Connect to the Shodan API using your key.
 2.  Generate and execute a series of search queries.

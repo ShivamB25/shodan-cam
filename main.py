@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import logging
 import time
+import argparse # Added for command-line arguments
 from dotenv import load_dotenv # Using python-dotenv to load env vars from .env file
 
 # --- Configuration ---
@@ -45,42 +46,57 @@ common_titles = ['"IP Camera"', '"Live View"', '"Network Camera"', '"Webcam"', '
 generic_terms = ['webcam', 'product:"Network Video Recorder"', 'product:"NVR"', 'product:"DVR"', 'device:"webcam"']
 vulnerability_filters = ['vuln:CVE-2021-36260', 'vuln:CVE-2017-7921', 'vuln:CVE-2023-21428'] # Add more relevant CVEs
 
-def generate_queries():
-    """Generates a diverse list of Shodan search queries."""
+def generate_queries(free_mode=False):
+    """
+    Generates a diverse list of Shodan search queries.
+    If free_mode is True, excludes filters likely restricted on free plans.
+    """
     queries = set() # Use a set to avoid duplicate queries
+    if free_mode:
+        logging.warning("Running in FREE MODE. Excluding queries with potentially restricted filters (vuln:, tag:, has_screenshot:).")
 
     # 1. Manufacturer + Port combinations
     for manu_name, manu_query in camera_manufacturers.items():
         for port in common_ports:
             queries.add(f'{manu_query} port:{port}')
-            # Add screenshot filter for potentially more open streams
-            queries.add(f'{manu_query} port:{port} has_screenshot:true') 
+            # Add screenshot filter only if not in free mode
+            if not free_mode:
+                queries.add(f'{manu_query} port:{port} has_screenshot:true')
 
     # 2. Generic Terms + Ports
     for term in generic_terms:
         for port in common_ports:
             queries.add(f'{term} port:{port}')
-            queries.add(f'{term} port:{port} has_screenshot:true')
+            if not free_mode:
+                queries.add(f'{term} port:{port} has_screenshot:true')
 
     # 3. Common Titles + Ports
     for title in common_titles:
         for port in common_ports:
             queries.add(f'http.title:{title} port:{port}')
-            queries.add(f'http.title:{title} port:{port} has_screenshot:true')
+            if not free_mode:
+                queries.add(f'http.title:{title} port:{port} has_screenshot:true')
 
-    # 4. Specific Vulnerabilities (can be combined with product/port if needed)
-    for vuln in vulnerability_filters:
-         queries.add(f'{vuln}')
-         # Combine vuln with common camera ports
-         for port in common_ports:
-             queries.add(f'{vuln} port:{port}')
+    # 4. Specific Vulnerabilities (Exclude in free mode)
+    if not free_mode:
+        for vuln in vulnerability_filters:
+             queries.add(f'{vuln}')
+             # Combine vuln with common camera ports
+             for port in common_ports:
+                 queries.add(f'{vuln} port:{port}')
 
-    # 5. General Screenshot query
-    queries.add('has_screenshot:true product:"webcam"')
-    queries.add('has_screenshot:true tag:"webcam"')
-    queries.add('has_screenshot:true port:554') # RTSP often has screenshots
+    # 5. General Screenshot query (Exclude in free mode)
+    if not free_mode:
+        queries.add('has_screenshot:true product:"webcam"')
+        queries.add('has_screenshot:true tag:"webcam"') # tag: filter might also be restricted
+        queries.add('has_screenshot:true port:554') # RTSP often has screenshots
 
-    logging.info(f"Generated {len(queries)} unique search queries.")
+    # Add some basic, likely free queries just in case
+    queries.add('webcam')
+    queries.add('product:"ip camera"')
+    queries.add('port:554') # Basic RTSP check
+
+    logging.info(f"Generated {len(queries)} unique search queries (Free mode: {free_mode}).")
     return list(queries)
 
 # --- Shodan API Interaction ---
@@ -184,6 +200,16 @@ def camera_discovery(api, queries, max_per_query, total_max):
 if __name__ == "__main__":
     logging.info("Starting Shodan Camera Discovery Script")
 
+    # --- Argument Parsing ---
+    parser = argparse.ArgumentParser(description="Discover potentially exposed cameras using Shodan.")
+    parser.add_argument(
+        '--free',
+        action='store_true',
+        help='Run in free mode, excluding queries with filters likely restricted on free Shodan plans (e.g., vuln:, tag:, has_screenshot:).'
+    )
+    args = parser.parse_args()
+    # --- End Argument Parsing ---
+
     if not API_KEY:
         logging.error("SHODAN_API_KEY environment variable not set. Exiting.")
         exit(1)
@@ -193,12 +219,18 @@ if __name__ == "__main__":
         # Check API connectivity and plan info
         api_info = api.info()
         logging.info(f"Shodan API connection successful. Plan: {api_info.get('plan', 'N/A')}, Credits: {api_info.get('query_credits', 'N/A')}")
+        # Add a check relevant to free mode
+        if args.free and api_info.get('plan', 'N/A').lower() != 'oss' and api_info.get('query_credits', 0) > 0:
+             logging.warning("Running in --free mode, but API key seems to belong to a paid plan. You might get fewer results than expected.")
+        elif not args.free and api_info.get('plan', 'N/A').lower() == 'oss':
+             logging.warning("Running in standard mode with a free API key. Many queries may fail due to filter restrictions. Consider using the --free flag.")
+
     except shodan.APIError as e:
         logging.error(f"Failed to connect to Shodan API: {e}")
         exit(1)
 
-    # Generate the list of queries
-    search_queries = generate_queries()
+    # Generate the list of queries, passing the free mode flag
+    search_queries = generate_queries(free_mode=args.free)
 
     # Discover cameras
     logging.info(f"Starting camera discovery with {len(search_queries)} queries...")
