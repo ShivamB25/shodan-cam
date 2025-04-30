@@ -4,12 +4,13 @@ import pandas as pd
 import os
 import logging
 import time
-# from dotenv import load_dotenv # Using python-dotenv to load env vars from .env file
+from dotenv import load_dotenv # Using python-dotenv to load env vars from .env file
 
 # --- Configuration ---
 # Load environment variables from a .env file if it exists
+load_dotenv()
 # Fetch API key from environment variable
-API_KEY = "qpqZGbyQFw2P63QA4cNe83SSfUfgDNp4"
+API_KEY = os.getenv("SHODAN_API_KEY")
 # Maximum results to fetch per query (adjust based on API plan and needs)
 MAX_RESULTS_PER_QUERY = 500 
 # Total maximum results across all queries (prevents excessive data collection)
